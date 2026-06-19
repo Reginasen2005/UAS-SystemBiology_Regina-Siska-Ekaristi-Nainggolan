@@ -1,0 +1,51 @@
+# Tahap 1: Impor library
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+
+# Tahap 2: Parameter
+Vmax1 = 5.0
+Km1 = 2.0
+Ki = 3.0
+X = 10.0
+k2 = 1.0
+k3 = 0.8
+k4 = 0.3
+
+# Tahap 3: Fungsi model
+def model(y, t):
+    A, B, P = y
+    v1 = (Vmax1 * X) / ((Km1 + X) * (1 + P / Ki))
+    v2 = k2 * A
+    v3 = k3 * B
+    v4 = k4 * A
+    dA = v1 - v2 - v4
+    dB = v2 - v3
+    dP = v3
+    return [dA, dB, dP]
+
+# Tahap 4: Kondisi awal dan waktu
+A0 = 0
+B0 = 0
+P0 = 0
+y0 = [A0, B0, P0]
+t = np.linspace(0, 50, 100)
+
+# Tahap 5: Jalankan simulasi
+sol = odeint(model, y0, t)
+A_sim = sol[:, 0]
+B_sim = sol[:, 1]
+P_sim = sol[:, 2]
+
+# Tahap 6: Buat grafik
+plt.figure(figsize=(10, 6))
+plt.plot(t, A_sim, color='blue', marker='o', markersize=4, linewidth=2, label='A')
+plt.plot(t, B_sim, color='orange', marker='s', markersize=4, linewidth=2, label='B')
+plt.plot(t, P_sim, color='green', marker='^', markersize=4, linewidth=2, label='P')
+plt.title('Dynamic Simulation of Metabolite Concentrations (with Inhibition)', fontsize=14, fontweight='bold')
+plt.xlabel('Time (hours)', fontsize=12)
+plt.ylabel('Concentration', fontsize=12)
+plt.legend(loc='best', fontsize=11)
+plt.grid(True, linestyle='--', alpha=0.7)
+plt.tight_layout()
+plt.show()
